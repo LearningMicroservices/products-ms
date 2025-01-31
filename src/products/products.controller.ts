@@ -1,9 +1,9 @@
-import { Controller, HttpException } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDto } from 'src/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 
 @Controller('products')
 export class ProductsController {
@@ -25,7 +25,7 @@ export class ProductsController {
   @MessagePattern({ cmd: 'findOneProduct' })
   findOne(@Payload('id') id: string) {
     if (isNaN(+id)) {
-      throw new HttpException('Invalid id', 400);
+      throw new RpcException('Invalid id');
     }
     return this.productsService.findOne(+id);
   }
@@ -40,7 +40,7 @@ export class ProductsController {
   @MessagePattern({ cmd: 'removeProduct' })
   remove(@Payload('id') id: string) {
     if (isNaN(+id)) {
-      throw new HttpException('Invalid id', 400);
+      throw new RpcException('Invalid id');
     }
     return this.productsService.remove(+id);
   }

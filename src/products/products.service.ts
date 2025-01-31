@@ -1,13 +1,9 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/common';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class ProductsService extends PrismaClient implements OnModuleInit {
@@ -66,16 +62,25 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
         where: { id, avaliable: true },
       });
       if (!product) {
-        throw new NotFoundException(`Product #${id} not found`);
+        throw new RpcException({
+          message: `Product #${id} not found`,
+          status: 'Bad request',
+          code: 400,
+        });
       }
       return product;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
-          throw new NotFoundException(`Product #${id} not found`);
+          throw new RpcException({
+            message: `Product #${id} not found`,
+            status: 'Bad request',
+            code: 400,
+          });
         }
+      } else if (error instanceof RpcException) {
+        throw error;
       }
-      throw error;
     }
   }
 
@@ -91,7 +96,11 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
-          throw new NotFoundException(`Product #${id} not found`);
+          throw new RpcException({
+            message: `Product #${id} not found`,
+            status: 'Bad request',
+            code: 400,
+          });
         }
       }
       throw error;
@@ -111,7 +120,11 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
-          throw new NotFoundException(`Product #${id} not found`);
+          throw new RpcException({
+            message: `Product #${id} not found`,
+            status: 'Bad Request',
+            code: 400,
+          });
         }
       }
       throw error;
