@@ -10,34 +10,36 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   // @Post()
-  @MessagePattern({ cmd: 'createProduct' })
+  @MessagePattern('createProduct')
   create(@Payload() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
   //@Get()
-  @MessagePattern({ cmd: 'findAllProducts' })
+  @MessagePattern('findAllProducts')
   findAll(@Payload() paginationDto: PaginationDto) {
     return this.productsService.findAll(paginationDto);
   }
 
   // @Get(':id')
-  @MessagePattern({ cmd: 'findOneProduct' })
+  @MessagePattern('findOneProduct')
   findOne(@Payload('id') id: string) {
     if (isNaN(+id)) {
+      console.log(id);
+
       throw new RpcException('Invalid id');
     }
     return this.productsService.findOne(+id);
   }
 
   // @Patch(':id')
-  @MessagePattern({ cmd: 'updateProduct' })
+  @MessagePattern('updateProduct')
   update(@Payload() updateProductDto: UpdateProductDto) {
     return this.productsService.update(updateProductDto.id, updateProductDto);
   }
 
   // @Delete(':id')
-  @MessagePattern({ cmd: 'removeProduct' })
+  @MessagePattern('removeProduct')
   remove(@Payload('id') id: string) {
     if (isNaN(+id)) {
       throw new RpcException('Invalid id');
@@ -45,7 +47,7 @@ export class ProductsController {
     return this.productsService.remove(+id);
   }
 
-  @MessagePattern({ cmd: 'validateProducts' })
+  @MessagePattern('validateProducts')
   validateProduct(@Payload() ids: number[]) {
     return this.productsService.validateProducts(ids);
   }
